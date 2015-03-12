@@ -55,7 +55,7 @@ LOGLUV_SUPPORT	= 1
 # Uncomment and edit following lines to enable JPEG support.
 #
 JPEG_SUPPORT	= 1
-JPEGDIR 	= ../../jpeg-8c
+JPEGDIR 	= ../../jpeg-9a
 JPEG_INCLUDE	= -I$(JPEGDIR)
 JPEG_LIB 	= ../../msvc_compiled_libs/jpeg.lib
 
