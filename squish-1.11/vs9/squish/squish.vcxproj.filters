@@ -91,10 +91,8 @@
     <None Include="..\..\singlecolourlookup.inl">
       <Filter>Header Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\texture_compression_s3tc.txt">
+    <None Include="..\..\texture_compression_s3tc.txt">
       <Filter>Resource Files</Filter>
-    </Text>
+    </None>
   </ItemGroup>
 </Project>
