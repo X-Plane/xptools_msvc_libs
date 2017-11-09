@@ -1,0 +1,178 @@
+#
+# Typically the only thing that needs to be changed are the paths to the
+# TIFF tree.  Note that we expect an existing build tree, in part because we
+# need private include files from libtiff, but also we need access to getopt.h.
+# in the ports directory.
+#
+# You may want to add optimization options to the CFLAGS macro as well. 
+#
+
+TIFF_DIR = ..\tiff-4.0.3\libtiff
+TIFF_INC = -I$(TIFF_DIR)
+TIFF_LIB = ..\msvc_compiled_libs\libtiff.lib
+
+# Installation locations (with install, or devinstall targets)
+PREFIX =	..
+BINDIR =	$(PREFIX)\bin
+LIBDIR =	$(PREFIX)\msvc_compiled_libs
+INCDIR =	$(PREFIX)\include
+DATADIR =	$(PREFIX)\share\epsg_csv
+
+#
+CC      = cl
+INCL	= -I. -Ilibxtiff $(TIFF_INC)
+
+
+# Pick the first LIBS definition for a static libtiff.lib or the second
+# to link against the libtiff DLL.
+
+LIBS    = geotiff.lib $(TIFF_LIB)
+#LIBS    = geotiff_i.lib $(TIFF_LIB_DLL)
+
+DLLNAME = geotiff.dll
+
+# Set optimization or debug flags here.
+#CFLAGS  = $(INCL) /MD /Ox /nologo
+CFLAGS  = $(INCL) /MD /Zi /nologo
+
+#
+OBJS    = \
+	xtiff.obj \
+	geo_free.obj \
+	geo_get.obj \
+	geo_names.obj \
+	geo_new.obj \
+	geo_print.obj \
+	geo_set.obj \
+	geo_tiffp.obj \
+	geo_write.obj \
+	geo_extra.obj \
+	geo_trans.obj \
+	geo_normalize.obj \
+	geotiff_proj4.obj \
+	geo_simpletags.obj \
+	cpl_csv_incode.obj \
+	cpl_serv.obj
+
+# make all external data tables compiled in, 
+# equivalent to configure --enable-incode-epsg
+
+OBJS = $(OBJS) \
+	datum.obj \
+	ellipsoid.obj \
+	gcs.obj \
+	pcs.obj \
+	prime_meridian.obj \
+	projop_wparm.obj \
+	unit_of_measure.obj
+
+CFLAGS = $(CFLAGS) -I..\proj-4.7.0\src
+
+datum.obj: csv\datum.c
+	$(CC) -c $(CFLAGS) csv\datum.c
+
+ellipsoid.obj: csv\ellipsoid.c
+	$(CC) -c $(CFLAGS) csv\ellipsoid.c
+
+gcs.obj: csv\gcs.c
+	$(CC) -c $(CFLAGS) csv\gcs.c
+
+pcs.obj: csv\pcs.c
+	$(CC) -c $(CFLAGS) csv\pcs.c
+
+prime_meridian.obj: csv\prime_meridian.c
+	$(CC) -c $(CFLAGS) csv\prime_meridian.c
+
+projop_wparm.obj: csv\projop_wparm.c
+	$(CC) -c $(CFLAGS) csv\projop_wparm.c
+
+unit_of_measure.obj: csv\unit_of_measure.c
+	$(CC) -c $(CFLAGS) csv\unit_of_measure.c
+
+# end of incode changes
+
+all:    geo_config.h geotiff.lib $(DLLNAME) listgeo.exe geotifcp.exe
+
+listgeo.exe:	bin\listgeo.c geotiff.lib
+	$(CC) $(CFLAGS) bin\listgeo.c $(LIBS)
+	
+geotifcp.exe:	bin\geotifcp.c geotiff.lib
+	$(CC) $(CFLAGS) bin\geotifcp.c bin\getopt.c $(LIBS)
+	
+gt_update.exe:	bin\gt_update.c geotiff.lib
+	$(CC) $(CFLAGS) bin\gt_update.c bin\getopt.c geotiff.lib $(LIBS)
+	
+geotiff.lib:	$(OBJS)
+	lib /out:geotiff.lib $(OBJS)
+
+#
+$(DLLNAME):    $(OBJS)
+	link /dll /out:$(DLLNAME) /implib:geotiff_i.lib $(OBJS) $(TIFF_LIB_DLL)
+	if exist $(DLLNAME).manifest mt -manifest $(DLLNAME).manifest -outputresource:$(DLLNAME);2
+
+geo_config.h:	geo_config.h.vc
+	copy geo_config.h.vc geo_config.h
+
+xtiff.obj: libxtiff\xtiff.c
+	$(CC) -c $(CFLAGS) libxtiff\xtiff.c
+
+geo_free.obj: geo_free.c
+	$(CC) -c $(CFLAGS) geo_free.c
+
+geo_get.obj: geo_get.c
+	$(CC) -c $(CFLAGS) geo_get.c
+
+geo_names.obj: geo_names.c
+	$(CC) -c $(CFLAGS) geo_names.c
+
+geo_new.obj: geo_new.c
+	$(CC) -c $(CFLAGS) geo_new.c
+
+geo_print.obj: geo_print.c
+	$(CC) -c $(CFLAGS) geo_print.c
+
+geo_set.obj: geo_set.c
+	$(CC) -c $(CFLAGS) geo_set.c
+
+geo_tiffp.obj: geo_tiffp.c
+	$(CC) -c $(CFLAGS) geo_tiffp.c
+
+geo_write.obj: geo_write.c
+	$(CC) -c $(CFLAGS) geo_write.c
+
+geo_trans.obj: geo_trans.c
+	$(CC) -c $(CFLAGS) geo_trans.c
+
+geo_extra.obj: geo_extra.c
+	$(CC) -c $(CFLAGS) geo_extra.c
+
+geo_normalize.obj: geo_normalize.c
+	$(CC) -c $(CFLAGS) geo_normalize.c
+
+geotiff_proj4.obj: geotiff_proj4.c
+	$(CC) -c $(CFLAGS) geotiff_proj4.c
+
+cpl_csv.obj: cpl_csv.c
+	$(CC) -c $(CFLAGS) cpl_csv.c
+
+cpl_serv.obj: cpl_serv.c
+	$(CC) -c $(CFLAGS) cpl_serv.c
+
+clean:
+	-del *.obj
+	-del *.exe
+	-del *.lib
+	-del *.dll
+	-del *.manifest
+
+install:	geotiff.lib
+#	-mkdir $(PREFIX)
+#	-mkdir $(BINDIR)
+	-mkdir $(LIBDIR)
+	-mkdir $(INCDIR)
+	copy *.lib $(LIBDIR)
+	copy *.h $(INCDIR)
+	copy libxtiff\*.h $(INCDIR)
+	copy *.inc $(INCDIR)
+#	-copy csv\*.csv $(DATADIR)
+	
