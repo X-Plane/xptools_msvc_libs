@@ -1,5 +1,5 @@
 # Directory tree where PROJ will be installed.
-INSTDIR=C:\PROJ
+INSTDIR=.\build\
 
 # Set the following to the directory where the PROJ distribution data files
 # (ie, the contents of ..\NAD) are to be installed.  It is possible to later
@@ -9,15 +9,15 @@ INSTDIR=C:\PROJ
 # distribution.  Any setting of the PROJ_LIB environment variable takes
 # precedence at runtime over the setting of the PROJ_LIB_DIR macro stored in
 # the compiled software.
-PROJ_LIB_DIR=$(INSTDIR)\SHARE
+PROJ_LIB_DIR=$(INSTDIR)\share
 
 # Uncomment the first for an optimized build, or the second for debug.
-OPTFLAGS=	/nologo /Ox /Op /MT
+OPTFLAGS=	/nologo /O2 /Zi /MT
 #OPTFLAGS=	/nologo /Zi /MD /Fdproj.pdb
 
 # Uncomment the first for linking exes against DLL or second for static
-EXE_PROJ =	proj_i.lib
-#EXE_PROJ =	proj.lib
+#EXE_PROJ =	proj_i.lib
+EXE_PROJ =	proj.lib
 
 # Set the version number for the DLL.  Normally we leave this blank since
 # we want software that is dynamically loading the DLL to have no problem
