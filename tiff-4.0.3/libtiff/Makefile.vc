@@ -100,3 +100,4 @@ clean:
 	-del *.dll
 	-del *.dll.manifest
 	-del *.pdb
+	-del *.exp

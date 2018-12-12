@@ -1,0 +1,70 @@
+This directory include the libraries required by all x64 build of xptools.
+Unlike the OSX/Linux libraries, which always have to be built be any developer
+from source with a provided makefile - for windows its a less automated approach:
+Some libraries require building with nmake on the command line, other have a 
+msvc2017 *.sln ready to compile.
+
+Either build method on windows requires a manual copy of the relevant include 
+and output files into the into the respective ./include and ./lib directories. 
+For his reason, the precompiled libraries and other files in these two 
+directories are included in the git repository, so normally no action is 
+required when compiling the XPtools with msvc2017.
+
+### msvc2017 ide builds ###
+
+cd zlib-1.2.11
+compile contrib\vstudio\vs17\zlibvc.sln
+copy zlib.h zconf.h ..\include\
+cd contrib\vstudio\vs17\x64\Release
+copy zlibstat.lib zlibstat.pdb $lib\
+
+
+cd squish-1.11
+compile vs17\squish.sln
+copy squish.h ..\include\
+cd vs17\squish\x64\Release
+copy squish.lib squish.pdb $lib\
+
+
+cd libpng-1.2.41
+compile projects\vs17\libpng.sln
+copy png.h pngconf.h ..\include\
+cd projects/vs17/x64/LIB Release
+copy libpng.lib libpng.pdb $lib\
+
+cd expat-2.0.1
+compile expat.sln
+copy lib\expat.h lib\expat_external.h ..\include\
+copy win32\libexpatMT.lib win32\libexpatMT.pdb ..\lib\
+
+cd jpeg-9a
+compile jpeg.sln
+copy jpeg.lib jpeg.pdb ..\lib\
+copy jpeglib.h jconfig.h jmorecfg.h jerror.h ..\include\
+
+cd freetype-2.2.1
+compile builds\win32\visualc\freetype.sln
+copy include\ft2build.h freetype ..\include\
+copy objs\freetype.lib objs\freetype.pdb ..\lib\
+
+### command line builds ####
+
+cd curl-7.36.0\winbuild
+nmake /f Makefile.vc mode=static RTLIBCFG=static VC=12 WITH_DEVEL=..\..\ WITH_ZLIB=static GEN_PDB=yes MACHINE=x64 DEBUG=no
+cd ..\builds\<find the right one>
+copy lib\libcurl_a.lib lib\libcurl_a.pdb ..\..\lib\
+copy include\curl ..\..\include\
+
+cd tiff-4.0.3
+nmake /f Makefile.vc lib
+cd libtiff
+copy libtiff.lib libtiff.pdb ..\lib\
+copy tiff.h tiffconf.h tiffio.h tiffio.hxx tiffvers. ..\include\
+
+cd proj-4.7.0
+nmake /f makefile.vc
+copy src\proj.lib ..\lib\
+copy src\proj_api.h ..\include\
+
+cd libgeotiff-1.4.2 
+make /f makefile.vc install
