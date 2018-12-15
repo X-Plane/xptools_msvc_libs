@@ -49,11 +49,28 @@ copy objs\freetype.lib objs\freetype.pdb ..\lib\
 
 ### command line builds ####
 
-cd curl-7.36.0\winbuild
-nmake /f Makefile.vc mode=static RTLIBCFG=static VC=12 WITH_DEVEL=..\..\ WITH_ZLIB=static GEN_PDB=yes MACHINE=x64 DEBUG=no
-cd ..\builds\<find the right one>
-copy lib\libcurl_a.lib lib\libcurl_a.pdb ..\..\lib\
-copy include\curl ..\..\include\
+curl-7.50.0
+
+The native Windows schannel TLS layer will not allow to use disk-based CA certificates, 
+required to connect to gatewayapi.x-plane.com - which uses a self signed certificate.
+So its a bit convoluted, here are Ben's notes when he did it:
+
+NOTE:
+You'll need the Windows SDK installed first or ctype.h won't be found !
+
+You'll also need OpenSSL compiled, which in turn requires cmake, nasm and perl.
+1) Open the Visual Studio Command Prompt (Make sure to open one with x64 support!)
+
+2) Navigate to SDK/COMMON/libcurl/curl-7.50.0/winbuild
+
+64bit
+
+3) Run nmake /f Makefile.vc mode=static vc=14 with_devel=c:\C++\X-Plane\design\SDK\COMMON\openssl\win\x64 with_ssl=static enable_sspi=no enable_ipv6=yes enable_idn=yes enable_spnego=no enable_winssl=no debug=no machine=x64 RTLIBCFG=static
+
+
+The outputs will be called libcurl_a.lib located in the curl-7.50.0/builds/libcurl-vc10-x64-release-static-ssl-static-obj-lib 
+and curl-7.50.0/builds/libcurl-vc10-x86-release-static-ssl-static-obj-lib folders. 
+### end of curl notes ###
 
 cd tiff-4.0.3
 nmake /f Makefile.vc lib
